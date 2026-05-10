@@ -114,12 +114,11 @@ void ShellUpdatePanels(Panel *SrcPanel, BOOL NeedSetUpADir)
 		if (NeedSetUpADir) {
 			FARString strCurDir;
 			SrcPanel->GetCurDir(strCurDir);
-			while (!strCurDir.IsEmpty()) {
-				const DWORD attrs = apiGetFileAttributes(strCurDir);
-				if (attrs != INVALID_FILE_ATTRIBUTES && (attrs & FILE_ATTRIBUTE_DIRECTORY))
+			while (!strCurDir.IsEmpty() && !apiPathIsDir(strCurDir)) {
+				fprintf(stderr, "Bad dir: '%ls'\n", strCurDir.CPtr());
+				if (!CutToSlash(strCurDir, true)) {
 					break;
-				if (!CutToSlash(strCurDir, true))
-					break;
+				}
 			}
 			if (strCurDir.IsEmpty()) {
 				apiGetCurrentDirectory(strCurDir);
