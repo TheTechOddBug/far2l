@@ -163,28 +163,20 @@ static bool DeleteRealRange(Edit *line, int start, int end, int cursor_pos)
 	}
 
 	const int eol_length = StrLength(end_seq);
-	wchar_t *tmp = new (std::nothrow) wchar_t[length - (end - start) + eol_length + 1];
-	if (!tmp) {
-		return false;
-	}
-
-	int out = 0;
+	std::wstring tmp;
+	tmp.reserve(length - (end - start) + eol_length + 1);
 	if (start > 0) {
-		wmemcpy(tmp, cur_str, start);
-		out+= start;
+		tmp.append(cur_str, start);
 	}
 	if (length > end) {
-		wmemcpy(tmp + out, cur_str + end, length - end);
-		out+= length - end;
+		tmp.append(cur_str + end, length - end);
 	}
 	if (eol_length > 0) {
-		wmemcpy(tmp + out, end_seq, eol_length);
-		out+= eol_length;
+		tmp.append(end_seq, eol_length);
 	}
 
-	line->SetBinaryString(tmp, out);
+	line->SetBinaryString(tmp.c_str(), static_cast<int>(tmp.size()));
 	line->SetCurPos(cursor_pos < start ? cursor_pos : start);
-	delete[] tmp;
 	return true;
 }
 
@@ -7331,9 +7323,6 @@ bool Editor::ProcessVerticalBlockEditKey(FarKey Key)
 	TextChanged(1);
 	VBlockSizeX = 0;
 	VBlockX = CurLine->GetCellCurPos();
-	if (m_bWordWrap) {
-		m_CurVisualLineInLogicalLine = FindVisualLine(CurLine, CurLine->GetCurPos());
-	}
 	Show();
 	return true;
 }
