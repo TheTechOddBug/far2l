@@ -319,8 +319,6 @@ void QuickView::Update(int Mode)
 
 void QuickView::ShowFile(const wchar_t *FileName, int TempFile, HANDLE hDirPlugin)
 {
-	if (Directory < 0)
-		return; //recusrion
 	DWORD FileAttr = 0;
 	CloseFile();
 	QView = nullptr;
